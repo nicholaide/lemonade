@@ -23,6 +23,10 @@ class ViewController: UIViewController {
     var cubeBuy = 0
     var lemonMix = 0
     var cubeMix = 0
+    
+    //startDay related
+    var customers: [Customer] = []
+    var mix:String = ""
 
     //You have (supplies)
     @IBOutlet weak var labelMoney: UILabel!
@@ -118,7 +122,6 @@ class ViewController: UIViewController {
 
         }
        
-        
     }
     
     @IBAction func buttonLemonMixSub(sender: UIButton) {
@@ -141,25 +144,79 @@ class ViewController: UIViewController {
     
     //main button
     @IBAction func buttonStart(sender: UIButton) {
+        let mixRatio:Double = Double(lemonMix) / Double(cubeMix)
+        
+        if mixRatio > 1.0 {
+            mix = "ACIDIC"
+        }
+        else if mixRatio == 1.0 {
+            mix = "EQUAL"
+        }
+            
+        else {
+            mix = "DILUTED"
+        }
+        
+        println("The mix is " + "\(mix)")
+        
+        //good to check if there is a lemonade first!
+        
+        generateCustomers()
+        getPaid()
+        
     }
     
+    //used by lemon and ice cube buttons
     func updateAllLabels() {
         //lemon
         labelLemonInventory.text = "\(lemonSupply)" + " Lemons"
         labelLemonBuy.text = "\(lemonBuy)"
         labelLemonMix.text = "\(lemonMix)"
         
-        
         //cubes
         labelCubeInventory.text = "\(cubeSupply)" + " Ice Cubes"
         labelCubeBuy.text = "\(cubeBuy)"
         labelCubeMix.text = "\(cubeMix)"
         
-        
         //cash
         labelMoney.text = "$" + "\(cashSupply)"
         
     }
+    
+    //randomly creates between 1 - 10 customers
+    func generateCustomers(){
+        let rand =  Int(arc4random_uniform(UInt32(10))) + 1
+        println("\(rand)" + " customers generated")
+        
+        for i in 1...rand {
+            var customer = Customer()
+            self.customers.append(customer)
+        }
+        
+    }
+    
+    //determines if each customer will pay for the lemonade drink
+    func getPaid() {
+        for var i = 0; i < self.customers.count; i++ {
+            println("\(i)")
+            println("\(customers[i].preference)" + " for customer")
+            var result:Bool = customers[i].likesLemonade(mix)
+            println("\(result)" + " for customer")
+            
+            if result {
+                cashSupply++
+                updateAllLabels()
+                println("We got paid")
+            }
+            
+            
+            
+        }
+        
+    }
+    
+    
+    
 
 }
 
